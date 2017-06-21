@@ -34,9 +34,20 @@ def retrieveLogsList(folder_name):
     os.chdir(original_path)
     return logs_filenames
 
-def computeTotalFlightTime(logs_list):
+def computeFlightTime(log_filename):
     return 0
+    
+def computeTotalFlightTime(logs_list):
+    total_flight_time = 0
 
+    if not isinstance(logs_list,list):
+        raise TypeError('Please enter a list of log filenames')
+    
+    for log_filename in logs_list:
+        total_flight_time += computeFlightTime(log_filename)
+    
+    return total_flight_time
+    
 if __name__ == '__main__':
     folder_name = LOGS_FOLDER_NAME
     logs_list = retrieveLogsList(folder_name)
