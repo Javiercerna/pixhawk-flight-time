@@ -37,7 +37,31 @@ class FlightTimeTest(unittest.TestCase):
                           '2016-10-28 12-34-41.px4')
         # Test 3: Check for blank filename
         self.assertRaises(TypeError,computeFlightTime,'')
-
+        # Test 4: Check known logs
+        log1 = '2017-05-09 09-41-26.log'
+        expected_flight_time = 2.5*60
+        filename = os.path.join(os.getcwd(),LOGS_FOLDER_NAME,log1)
+        flight_time = computeFlightTime(filename)
+        time_error = abs(expected_flight_time - flight_time)
+        self.assertTrue(time_error < 0.1*expected_flight_time,
+                        'Flight time doesnt match expected')
+        log2 = '200 11-04-2017 3-20-00 p. m..bin.log'
+        expected_flight_time = 0
+        filename = os.path.join(os.getcwd(),LOGS_FOLDER_NAME,log2)
+        flight_time = computeFlightTime(filename)
+        time_error = abs(expected_flight_time - flight_time)
+        self.assertTrue(time_error < (expected_flight_time+1),
+                         'Flight time doesnt match expected')
+        log3 = '2017-03-31 11-06-44.log'
+        expected_flight_time = 19*60
+        filename = os.path.join(os.getcwd(),LOGS_FOLDER_NAME,log3)
+        flight_time = computeFlightTime(filename)
+        time_error = abs(expected_flight_time - flight_time)
+        self.assertTrue(time_error < 0.1*expected_flight_time,
+                        'Flight time doesnt match expected')
+        # log4 = '2016-11-09 16-33-24.log'
+        
+        
     def test_computeTotalFlightTime(self):
         # Test 1: Handle bad input (no list)
         self.assertRaises(TypeError,computeTotalFlightTime,42)
