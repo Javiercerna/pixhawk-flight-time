@@ -17,12 +17,14 @@ class FlightTimeTest(unittest.TestCase):
         # Test 2: Check that multiple runs give the same result
         result = retrieveLogsList(LOGS_FOLDER_NAME)
         for dummy_ind in range(100):
-            self.assertEqual(retrieveLogsList(LOGS_FOLDER_NAME),result)
+            self.assertEqual(retrieveLogsList(LOGS_FOLDER_NAME),result,
+                             'The logs list size has changed between runs')
         # Test 3: Check that the filenames retrieved exist
         result = retrieveLogsList(LOGS_FOLDER_NAME)
         for dummy_ind in range(100):
             random_log = random.choice(result)
-            self.assertTrue(os.path.isfile(random_log))
+            self.assertTrue(os.path.isfile(random_log),
+                            'The log filename doesnt exist')
 
     def test_computeFlightTime(self):
         # Test 1: Handle bad input (no string)
@@ -42,7 +44,8 @@ class FlightTimeTest(unittest.TestCase):
         self.assertRaises(TypeError,computeTotalFlightTime,'')
         # Test 2: Check that no logs give a flight time of 0.
         total_flight_time = computeTotalFlightTime([])
-        self.assertEqual(total_flight_time,0)
+        self.assertEqual(total_flight_time,0,
+                         'The total flight time is not 0 for []')
         
 if __name__ == '__main__':
-    unittest.main()
+    unittest.main(verbosity=2)
