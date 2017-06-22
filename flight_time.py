@@ -29,13 +29,20 @@ def retrieveLogsList(folder_name):
     os.chdir(os.path.join(os.getcwd(),folder_name))
 
     files = os.listdir(os.getcwd())
-    logs_filenames = [f for f in files if f[-3:] == 'log']
+    logs_filenames = [os.path.join(os.getcwd(),f) for f in files
+                      if f[-3:] == 'log']
     
     os.chdir(original_path)
     return logs_filenames
 
 def computeFlightTime(log_filename):
-    return 0
+    flight_time = 0
+
+    if not isinstance(log_filename,str) or log_filename[-3:] != 'log':
+        raise TypeError('Please enter a valid log filename.' +
+                        ' Filename entered: "%s"' % (log_filename))
+
+    return flight_time
     
 def computeTotalFlightTime(logs_list):
     total_flight_time = 0
