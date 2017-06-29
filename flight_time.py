@@ -6,6 +6,7 @@ import os
 ##############################################################################
 
 LOGS_FOLDER_NAME = 'logs'
+LOG_FILE_EXTENSION = '.log'
 
 ##############################################################################
 #################################  Methods  ##################################
@@ -17,7 +18,7 @@ def retrieveLogsList(folder_name):
     avoid storing the folder name as a separate parameter.
     '''
     original_path = os.getcwd()
-
+    
     # Validate input
     if not isinstance(folder_name,str):
         raise TypeError('Please enter a valid folder name')
@@ -27,7 +28,7 @@ def retrieveLogsList(folder_name):
 
     files = os.listdir(os.getcwd())
     logs_filenames = [os.path.join(os.getcwd(),f) for f in files
-                      if f[-3:] == 'log']
+                      if f.endswith(LOG_FILE_EXTENSION)]
     
     os.chdir(original_path)
     return logs_filenames
@@ -44,16 +45,16 @@ def createLogObject(log_filename):
     TIMEUS_INDEX = 1
 
     # Validate input
-    if not isinstance(log_filename,str) or log_filename[-3:] != 'log':
+    if not isinstance(log_filename,str) or not(log_filename.endswith(LOG_FILE_EXTENSION)):
         raise TypeError('Please enter a valid log filename.' +
                         ' Filename entered: "%s"' % (log_filename))
-
+    
     # Initialize empty log object
     log_object = {'firmware_version' : '',
                         'curr_index' : -1,
                     'timeus_entries' : [],
                    'current_entries' : []}
-
+    
     # Store desired properties in log_object
     with open(log_filename,'rb') as log:
         log_reader = csv.reader(log)
@@ -83,10 +84,10 @@ def computeFlightTime(log_object):
     if not isinstance(log_object,dict) or not log_object_valid:
         raise TypeError('Please enter a valid log object.' +
                         ' Object entered: %s' % (log_object))
-
+    
     current_multiplier = CURRENT_MULTIPLIERS[log_object['firmware_version']]
     time_multiplier = TIME_MULTIPLIERS[log_object['firmware_version']]
-
+    
     drone_flying = False
     last_takeoff = -1
     flight_time = 0
@@ -101,7 +102,7 @@ def computeFlightTime(log_object):
         elif drone_flying:
             flight_time += timeus - last_takeoff
             drone_flying = False
-
+    
     return flight_time/1e6
                 
 def computeTotalFlightTime(logs_list):
@@ -132,7 +133,7 @@ def getEntryIndexFromHeader(header,entry_name):
 def findHeaderInRow(row,header_row_name):
     FMT_ROW_NAME = 'FMT'
     HEADER_FIRST_INDEX = 5
-
+    
     if (row[0].strip() == FMT_ROW_NAME and row[3].strip() == header_row_name):
         curr_header = [header_element.strip().upper() for header_element
                        in row[HEADER_FIRST_INDEX:]]
@@ -144,7 +145,7 @@ def findCurrHeaderInRow(row):
 
 def findCurrIndexInRow(row):
     CURR_ENTRY_NAME = 'CURR'
-
+    
     curr_index = -1
     
     curr_header = findCurrHeaderInRow(row)
@@ -159,7 +160,7 @@ def findFirmwareVersionInRow(row):
     FIRMWARE_ENTRY_INDEX = -1
     FIRMWARE_LENGTH = 4 # To save only V3.2, V3.3, V3.4
     firmware_string = row[FIRMWARE_ENTRY_INDEX]
-
+    
     if row[ROW_NAME_INDEX] == MSG_ROW_NAME:
         start_firmware = firmware_string.find('V') # Assuming always starts with V
         return firmware_string[start_firmware:start_firmware+FIRMWARE_LENGTH]
