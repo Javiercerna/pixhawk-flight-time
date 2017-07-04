@@ -1,3 +1,4 @@
+import argparse
 import csv
 import os
 
@@ -167,9 +168,16 @@ def findFirmwareVersionInRow(row):
     return ''
 
 if __name__ == '__main__':
-    folder_name = LOGS_FOLDER_NAME
-    logs_list = retrieveLogsList(folder_name)
-    print 'Analyzing %s logs...' % (len(logs_list))
-    #print 'Flight time: %s' % (computeFlightTime(logs_list[86]))
-    total_flight_time = computeTotalFlightTime(logs_list)
-    print 'Total flight time: %s s' % (total_flight_time)
+    parser = argparse.ArgumentParser()
+    parser.add_argument('-l','--log',help='single log filename')
+    args = parser.parse_args()
+
+    if args.log:
+        flight_time = computeTotalFlightTime([args.log])
+        print 'Flight time: %s s' % (flight_time)
+    else:
+        folder_name = LOGS_FOLDER_NAME
+        logs_list = retrieveLogsList(folder_name)
+        print 'Analyzing %s logs...' % (len(logs_list))
+        total_flight_time = computeTotalFlightTime(logs_list)
+        print 'Total flight time: %s s' % (total_flight_time)
