@@ -73,8 +73,8 @@ def createLogObject(log_filename):
 
 def computeFlightTime(log_object):
     CURRENT_THRESHOLD = 4
-    CURRENT_MULTIPLIERS = {'V3.2': 1, 'V3.3': 1.0/100, 'V3.4': 1}
-    TIME_MULTIPLIERS = {'V3.2': 1000, 'V3.3': 1, 'V3.4': 1}
+    CURRENT_MULTIPLIERS = {'V3.2': 1, 'V3.3': 1.0/100, 'V3.4': 1, 'V3.7': 1}
+    TIME_MULTIPLIERS = {'V3.2': 1000, 'V3.3': 1, 'V3.4': 1, 'V3.7': 1}
 
     # Validate input
     log_object_valid = 'firmware_version' in log_object and \
@@ -95,7 +95,7 @@ def computeFlightTime(log_object):
     for entry_ind in range(len(log_object['timeus_entries'])):
         timeus = time_multiplier*log_object['timeus_entries'][entry_ind]
         current = current_multiplier*log_object['current_entries'][entry_ind]
-
+        
         if current > CURRENT_THRESHOLD:
             if not drone_flying:
                 last_takeoff = timeus
