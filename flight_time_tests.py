@@ -4,7 +4,8 @@ import random
 import sys
 
 from flight_time import retrieveLogsList, createLogObject, \
-             computeFlightTime, computeTotalFlightTime
+             computeFlightTime, computeTotalFlightTime, \
+             formatSeconds
 
 LOGS_FOLDER_NAME = 'logs'
 
@@ -97,6 +98,21 @@ class FlightTimeTest(unittest.TestCase):
         total_flight_time = computeTotalFlightTime([])
         self.assertEqual(total_flight_time,0,
                          'The total flight time is not 0 for []')
+
+    def test_formatSeconds(self):
+        # Test 1: Handle bad input (no float)
+        self.assertRaises(TypeError,formatSeconds,'42')
+        self.assertRaises(TypeError,formatSeconds,[42])
+        # Test 2: Handle bad input (negative seconds)
+        self.assertRaises(ValueError,formatSeconds,-10)
+        # Test 3: Check known cases
+        expected_times = ['00:00:00','00:00:30','00:01:00','00:10:30',
+                          '01:00:00','02:00:30','03:20:30']
+        seconds_to_test = [0,30,60,630,3600,7230,12030]
+        for ind in range(len(expected_times)):
+            formatted_time = formatSeconds(seconds_to_test[ind])
+            self.assertEqual(formatted_time,expected_times[ind],
+                             'Time formatted doesnt match expected')
         
 if __name__ == '__main__':
     unittest.main(verbosity=2)

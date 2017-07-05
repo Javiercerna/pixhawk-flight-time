@@ -167,6 +167,23 @@ def findFirmwareVersionInRow(row):
         return firmware_string[start_firmware:start_firmware+FIRMWARE_LENGTH]
     return ''
 
+def formatSeconds(seconds):
+    SECONDS_TO_HOURS = 3600
+    SECONDS_TO_MINUTES = 60
+    
+    if not isinstance(seconds,int) and not isinstance(seconds,float):
+        raise TypeError('Please enter a valid amount of seconds')
+    elif seconds < 0:
+        raise ValueError('Please enter a positive amount of seconds')
+
+    seconds = int(seconds)
+    hours = seconds / SECONDS_TO_HOURS
+    seconds = seconds % SECONDS_TO_HOURS
+    minutes = seconds / SECONDS_TO_MINUTES
+    seconds = seconds % SECONDS_TO_MINUTES
+    
+    return '%02d:%02d:%02d' % (hours,minutes,seconds)
+
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('-l','--log',help='single log filename')
@@ -174,10 +191,10 @@ if __name__ == '__main__':
 
     if args.log:
         flight_time = computeTotalFlightTime([args.log])
-        print 'Flight time: %s s' % (flight_time)
+        print 'Flight time: %s s' % (formatSeconds(flight_time))
     else:
         folder_name = LOGS_FOLDER_NAME
         logs_list = retrieveLogsList(folder_name)
         print 'Analyzing %s logs...' % (len(logs_list))
         total_flight_time = computeTotalFlightTime(logs_list)
-        print 'Total flight time: %s s' % (total_flight_time)
+        print 'Total flight time: %s s' % (formatSeconds(total_flight_time))
