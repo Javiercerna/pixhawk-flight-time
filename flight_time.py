@@ -68,11 +68,12 @@ def createLogObject(log_filename):
                 curr_index = log_object['curr_index']
                 log_object['timeus_entries'].append(float(row[TIMEUS_INDEX].strip()))
                 log_object['current_entries'].append(float(row[curr_index].strip()))
-    
+            
     return log_object
 
 def computeFlightTime(log_object):
-    CURRENT_THRESHOLD = 4
+    CURRENT_THRESHOLDS_TAKEOFF = {'V3.2': 4, 'V3.3': 4, 'V3.4': 4, 'V3.7': 4}
+    CURRENT_THRESHOLDS_LAND = {'V3.2': 4, 'V3.3': 4, 'V3.4': 4, 'V3.7': 0.4}
     CURRENT_MULTIPLIERS = {'V3.2': 1, 'V3.3': 1.0/100, 'V3.4': 1, 'V3.7': 1}
     TIME_MULTIPLIERS = {'V3.2': 1000, 'V3.3': 1, 'V3.4': 1, 'V3.7': 1}
 
@@ -85,7 +86,9 @@ def computeFlightTime(log_object):
     if not isinstance(log_object,dict) or not log_object_valid:
         raise TypeError('Please enter a valid log object.' +
                         ' Object entered: %s' % (log_object))
-    
+
+    current_threshold_takeoff = CURRENT_THRESHOLDS_TAKEOFF[log_object['firmware_version']]
+    current_threshold_land = CURRENT_THRESHOLDS_LAND[log_object['firmware_version']]
     current_multiplier = CURRENT_MULTIPLIERS[log_object['firmware_version']]
     time_multiplier = TIME_MULTIPLIERS[log_object['firmware_version']]
     
@@ -96,11 +99,11 @@ def computeFlightTime(log_object):
         timeus = time_multiplier*log_object['timeus_entries'][entry_ind]
         current = current_multiplier*log_object['current_entries'][entry_ind]
         
-        if current > CURRENT_THRESHOLD:
+        if current > current_threshold_takeoff:
             if not drone_flying:
                 last_takeoff = timeus
                 drone_flying = True
-        elif drone_flying:
+        elif current < current_threshold_land and drone_flying:
             flight_time += timeus - last_takeoff
             drone_flying = False
     
@@ -141,19 +144,17 @@ def findHeaderInRow(row,header_row_name):
         return curr_header
     return []
 
-def findCurrHeaderInRow(row):
-    return findHeaderInRow(row,'CURR')
+def findEntryIndexInRow(row,header_name,entry_name):
+    entry_index = -1
+
+    header = findHeaderInRow(row,header_name)
+    if header != []:
+        entry_index = getEntryIndexFromHeader(header,entry_name)
+
+    return entry_index
 
 def findCurrIndexInRow(row):
-    CURR_ENTRY_NAME = 'CURR'
-    
-    curr_index = -1
-    
-    curr_header = findCurrHeaderInRow(row)
-    if curr_header != []:
-        curr_index = getEntryIndexFromHeader(curr_header,CURR_ENTRY_NAME)
-    
-    return curr_index
+    return findEntryIndexInRow(row,'CURR','CURR')
 
 def findFirmwareVersionInRow(row):
     ROW_NAME_INDEX = 0
