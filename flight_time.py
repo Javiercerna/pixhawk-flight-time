@@ -72,10 +72,14 @@ def createLogObject(log_filename):
     return log_object
 
 def computeFlightTime(log_object):
-    CURRENT_THRESHOLDS_TAKEOFF = {'V3.2': 4, 'V3.3': 4, 'V3.4': 4, 'V3.7': 4}
-    CURRENT_THRESHOLDS_LAND = {'V3.2': 4, 'V3.3': 4, 'V3.4': 4, 'V3.7': 0.4}
-    CURRENT_MULTIPLIERS = {'V3.2': 1, 'V3.3': 1.0/100, 'V3.4': 1, 'V3.7': 1}
-    TIME_MULTIPLIERS = {'V3.2': 1000, 'V3.3': 1, 'V3.4': 1, 'V3.7': 1}
+    CURRENT_THRESHOLDS_TAKEOFF = {'V3.2': 4, 'V3.3': 4, 'V3.4': 4, 'V3.7': 4,
+                                  'V3.5': 4}
+    CURRENT_THRESHOLDS_LAND = {'V3.2': 4, 'V3.3': 4, 'V3.4': 4, 'V3.7': 0.4,
+                               'V3.5': 4}
+    CURRENT_MULTIPLIERS = {'V3.2': 1, 'V3.3': 1.0/100, 'V3.4': 1, 'V3.7': 1,
+                           'V3.5': 1}
+    TIME_MULTIPLIERS = {'V3.2': 1000, 'V3.3': 1, 'V3.4': 1, 'V3.7': 1,
+                        'V3.5': 1}
 
     # Validate input
     log_object_valid = 'firmware_version' in log_object and \
